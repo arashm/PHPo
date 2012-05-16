@@ -79,7 +79,160 @@ class PHPoHeader extends PHPoBlock
 
 class PHPoStatement extends PHPoBlock
 {
+	/**
+	 * Placements of current block in source files
+	 * @var array 
+	 */
+	private $placements = array ();
 	
+	
+	/**
+	 * Flags of this block
+	 * @var array
+	 */
+	private $flags = array();
+	
+	/**
+	 * Translator comments
+	 * @var array
+	 */
+	private $translatorComments = array();
+	
+	/**
+	 * Extracted comments
+	 * @var array
+	 */
+	private $extractedComments = array();
+	
+	/**
+	 * @var array
+	 */
+	private $previousUntranslatedStrings = array();
+	
+	/**
+	 * msgid 
+	 * @var array
+	 */
+	private $msgId = array();
+	
+	/**
+	 * msgstr
+	 * @var unknown_type
+	 */
+	private $msgStr = array();
+	
+	/**
+	 * Add a placements
+	 * @param string $strPlace
+	 */
+	public function addPlacement($strPlace)
+	{
+		$this->placements[] = $strPlace;
+	}
+	
+	/**
+	 * Get placements
+	 * @return array();
+	 */
+	public function getPlacements()
+	{
+		return $this->placements;
+	}
+	
+	/**
+	 * Add flags to current flag list
+	 * @param string|array $flags
+	 */
+	public function addFlag($flags)
+	{
+		if (!is_array($flags))
+			$flags = array ($flags);
+		//TODO: validate flag type
+		foreach ($flags as $flag)
+			$this->flags[] = $flag;
+		$this->flags = array_unique($this->flags);
+	}
+	
+	/**
+	 * Current block has this flag or not?
+	 * @param string $flag
+	 * @return boolean
+	 */
+	public function hasFlasg($flag)
+	{
+		return in_array($flag, $this->flags);
+	}
+	
+	/**
+	 * Get all flags
+	 * 
+	 * @return array
+	 */
+	public function getFlags()
+	{
+		return $this->flags;
+	}
+	
+	public function addTranslatorComment($commnet)
+	{
+		$this->translatorComments[] = $commnet;
+	}
+	
+	public function getTranslatorComments()
+	{
+		return $this->translatorComments;
+	}
+	
+	public function addExtractedComment($comment)
+	{
+		$this->extractedComments[] = $comment;
+	}
+	
+	public function getExtractedComments()
+	{
+		return $this->extractedComments;
+	}
+	
+	public function addPreviousUntranslatedString($comment)
+	{
+		$this->previousUntranslatedStrings[] = $comment;
+	}
+	
+	public function getPreviousUntranslatedStrings()
+	{
+		return $this->previousUntranslatedStrings;
+	}	
+	
+	
+	public function addMsgId($msg)
+	{
+		$this->msgId[] = $msg;
+	}
+	
+	public function getMsgId()
+	{
+		return $this->msgId;
+	}
+	
+	public function getMsgIdAsString()
+	{
+		return implode(' ', $this->msgId);
+	}
+	
+	public function addMsgStr($msg)
+	{
+		$this->msgStr[] = $msg;
+	}
+	
+	public function getMsgStr()
+	{
+		return $this->msgStr;
+	}
+	
+	public function getMsgStrAsString()
+	{
+		return implode(' ', $this->msgStr);
+	}
 }
 
 class PHPo {
@@ -113,6 +266,10 @@ class PHPo {
 	private $strId = array();
 
 
+	/**
+	 * Constructor
+	 * @param string $file po file address
+	 */
 	public function __construct($file = false) 
 	{
 		if ($file)
@@ -122,6 +279,11 @@ class PHPo {
 		}
 	}
 	
+	/**
+	 * Load a file
+	 * @param string $file
+	 * @throws Exception
+	 */
 	public function loadFile($file)
 	{
 		if (!is_file($file) && is_readable($file))
@@ -132,13 +294,23 @@ class PHPo {
 		$this->poLines = file($this->fileName);		
 	}
 	
+	/**
+	 * Get next line from queue
+	 * @return string
+	 */
+	
 	private function getNextLine()
 	{
+		if (count($this->poLines) == 0)
+			return false;
 		$next = array_shift($this->poLines);
 		//Trim do the trick :D
 		return trim($next);
 	}
 	
+	/**
+	 * Parse header part
+	 */
 	private function parseHeder()
 	{
 		$this->header = new PHPoHeader();
@@ -162,18 +334,75 @@ class PHPo {
 		}
 	}
 	
+	/**
+	 * Parse 
+	 */
 	private function parseABlock()
 	{
+		$statement = new PHPoStatement();
 		while ($line = $this->getNextLine())
 		{
-			
+			$two = substr($line, 0, 2);
+			if ($two == "#:")
+			{
+				$line = substr($line, 2);
+				$statement->addPlacement($line);
+			}
+			elseif ($two == "#,")
+			{
+				$line = substr($line, 2);
+				$flags = explode(',', $line);
+				$statement->addFlag($flags);
+			}
+			elseif ($two == '#.')
+			{
+				$line = substr($line, 2);
+				$statement->addExtractedComment($line);
+			}	
+			elseif ($two == '#|')
+			{
+				$line = substr($line, 2);
+				$statement->addPreviousUntranslatedString($line);
+			}
+			elseif ($two{0} == '#')
+			{
+				$line = substr($line, 1);
+				$statement->addTranslatorComment(trim($line));
+			}
+			else {
+				//Its time to check for translated strings
+				if (substr($line, 0, 5) == "msgid")
+				{
+					//It must follow with a msgstr
+					$line = preg_replace('/^[a-zA-Z]{5}\s?"(.*)"$/', '\\1', $line);
+					$statement->addMsgId($line);
+					$msgStr = false;
+					while ($line = $this->getNextLine())
+					{
+						if (substr($line, 0, 6) == "msgstr")
+						{
+							$msgStr = true;
+							$line = preg_replace('/^[a-zA-Z]{6}\s?"(.*)"$/', '\\1', $line);
+						}
+						
+						if ($msgStr)
+							$statement->addMsgStr($line);
+						else
+							$statement->addMsgId($line);
+					}
+					//Exit this while means the block is ended, so exit the block
+					break;
+				}
+			}		
 		}
+		
+		$this->statements[] = $statement;
+		return $line !== false;
 	}
 	
 	/**
 	 * Parse po file into an array
 	 * 
-	 * @return array
 	 */
 
 	public function parsePO()
@@ -182,71 +411,17 @@ class PHPo {
 		$this->statements = array();
 		//First of all, parse header 
 		$this->parseHeder();
-		
-		var_dump($this->header);
-		return;
-		// $i is the count of blank lines. We use it as the ID of strings too.
-		$i = 0;
-		foreach ($this->poLines as $line) {
-			// Until we don't reach a blank line, we're still in header.
-			if ($i == 0) {
-				switch ($value) {
-					// If it start with "# " or "#" It's a header comment.
-					case substr($value, 0, 2)  == '# ':
-						$this->header[] = $value;
-						break;
-					// If the line starts with a " befor the first empty line, It's our flags.
-					case substr($value, 0, 1)  == '"':
-						// if ($i == 0) {
-							// We want to know the flags and put them in key => value order
-							$ex = explode(':', $value, 2);
-							// Need to get rid of those qutations
-							$this->flags[str_replace('"', '', $ex[0])] = str_replace('"', '', $ex[1]);
-						// }
-						break;
-					// Just for finding the first blank line
-					case strlen($value) == 1:
-						$i++;
-						break;
-					}
-			// We have reached to the first blank line, so we've passed the Headers land
-			// and now we're in Translations territory.
-			} else {
-				switch ($value) {
-					// If it starts with a "#:" it's the string place
-					case substr($value, 0, 2) == "#:":
-						$this->strId[$i]['strPlace'] = substr($value, 3, -1);
-						break;
-					// If it starts with a "#," it's a flag (Usually fuzzy)
-					case substr($value, 0, 2) == "#,":
-						$this->strId[$i]['strFlag'] = substr($value, 3, -1);
-						break;
-					// If it starts with a "#." it's a translation comment
-					case substr($value, 0, 2) == "#.":
-						$this->strId[$i]['strComment'] = substr($value, 3, -1);
-						break;
-					// If it starts with a "msgid" it's the orginal string
-					case substr($value, 0, 5) == "msgid":
-						// $this->strId[$i]['msgId'] = str_replace('"', '', $value);
-						$this->strId[$i]['msgId'] = preg_replace('/^[a-zA-Z]{5}\s?"(.+)"/', '\\1', $value);
-						break;
-					// If it starts with a "msgstr" it's the translated string
-					case substr($value, 0, 6) == "msgstr":
-						$this->strId[$i]['msgStr'] = preg_replace('/^[a-zA-Z]{6}\s?"(.+)"/', '\\1', $value);
-						break;
-					default:
-						$i++;
-				}
-			}
-		}
-		print_r($this->strId);
-
+		while ($this->parseABlock());
 	}
 
-	private function instantiate()
+	public function getHeader()
 	{
-		
+		return $this->header;
 	}
-
+	
+	public function getStatements()
+	{
+		return $this->statements;
+	}
 
 }
