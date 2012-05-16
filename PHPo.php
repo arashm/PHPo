@@ -1,51 +1,193 @@
 <?php
 
+class PHPoBlock 
+{
+
+}
+
+
+class PHPoHeader extends PHPoBlock
+{
+	
+	/**
+	 * Header comments before header content
+	 * @var array
+	 */
+	private $comments = array();
+	
+	/**
+	 * po file header attribute
+	 * @var array
+	 */
+	private $attributes = array();
+	
+	/**
+	 * Push a comment
+	 * @param string $comment
+	 */
+	public function addComment($comment)
+	{
+		$this->comments[] = $comment;
+	}
+	
+	/**
+	 * Get all comments
+	 * @return array
+	 */
+	public function getComments()
+	{
+		return $this->comments;
+	}
+	
+	/**
+	 * Add an attribute from po header
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 */
+	public function addAttribute($name, $value)
+	{
+		$this->attributes[$name] = trim($value);
+	}
+	
+	/**
+	 * Get a header attribute
+	 * @param string $name
+	 * @param string $default
+	 * 
+	 * @return string
+	 */
+	
+	public function getAttribute($name, $default = null)
+	{
+		if (isset($this->attributes[$name]))
+			return $this->attributes[$name];
+		else
+			return $default;
+	}
+	
+	/**
+	 * Get all attributes
+	 * @return array
+	 */
+	public function getAttributes()
+	{
+		return $this->attributes;
+	}
+	
+}
+
+class PHPoStatement extends PHPoBlock
+{
+	
+}
+
 class PHPo {
 
-	private $path;
+
+	
+	/**
+	 * File address
+	 * @var string
+	 */
+	private $fileName;
+	
+	/**
+	 * Array contain file lines
+	 * @var array
+	 */
 	private $poLines;
-	private $header = array();
+	
+	
+	/**
+	 * Header of this po file
+	 * @var PHPoHeader
+	 */
+	private $header;
+	/**
+	 * Array of statements
+	 * @var array
+	 */
+	private $statements = array();
 	private $flags = array();
 	private $strId = array();
 
 
-	public function __construct($path) {
-		if (!is_file($path)) {
-			throw new Exception("Error: The file you have passed doesn't exist.");
-		} elseif (substr($path, strrpos($path, ".")) != '.po') {
-			throw new Exception("Error: The passed file should be a \'.po\' file.");
-		} else {
-			$this->poLines = file($path);
-			// $file = file_get_contents($path);
-			$this->parsePO();
+	public function __construct($file = false) 
+	{
+		if ($file)
+		{
+			$this->loadFile($file);
+			$this->parsePO();	
 		}
 	}
-
-	/*
-	* TODO
-	* Getter and setters
-	*/
-
-	public function getPath()
+	
+	public function loadFile($file)
 	{
-	    return $this->path;
+		if (!is_file($file) && is_readable($file))
+			throw new Exception("Error: The file you have passed doesn't exist.");
+		elseif (substr($file, strrpos($file, ".")) != '.po')
+			throw new Exception("Error: The passed file should be a \'.po\' file.");		
+		$this->fileName = $file;
+		$this->poLines = file($this->fileName);		
 	}
 	
-	public function setPath($path)
+	private function getNextLine()
 	{
-	    $this->path = $path;
-	    return $this;
+		$next = array_shift($this->poLines);
+		//Trim do the trick :D
+		return trim($next);
 	}
-
-	/*
-	* Functions
-	*/
-
-	private function parsePO()
+	
+	private function parseHeder()
 	{
+		$this->header = new PHPoHeader();
+		while ($line = $this->getNextLine())
+		{
+			if (substr($line, 0, 2) == '# ')
+			{
+				$line = substr($line, 2);
+				$this->header->addComment($line);
+			}
+			elseif ($line{0} == '"' )
+			{
+				$line = substr( $line, 1 , strlen($line) - 2);
+				//Its normal to have an \n in the end, remove that since not usefull here
+				$line = str_replace('\n', '', $line);
+				$attr = explode(':', $line);
+				if (count($attr) == 2)
+					$this->header->addAttribute($attr[0], $attr[1]);
+				//else just ignore it!
+			}
+		}
+	}
+	
+	private function parseABlock()
+	{
+		while ($line = $this->getNextLine())
+		{
+			
+		}
+	}
+	
+	/**
+	 * Parse po file into an array
+	 * 
+	 * @return array
+	 */
+
+	public function parsePO()
+	{
+		// Reset current result
+		$this->statements = array();
+		//First of all, parse header 
+		$this->parseHeder();
+		
+		var_dump($this->header);
+		return;
 		// $i is the count of blank lines. We use it as the ID of strings too.
 		$i = 0;
-		foreach ($this->poLines as $lines => $value) {
+		foreach ($this->poLines as $line) {
 			// Until we don't reach a blank line, we're still in header.
 			if ($i == 0) {
 				switch ($value) {
