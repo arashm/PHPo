@@ -1,11 +1,19 @@
 <?php
-
+/**
+ * Block base class
+ * @author f0rud
+ *
+ */
 class PHPoBlock 
 {
 
 }
 
-
+/**
+ * Po header
+ * @author f0rud
+ *
+ */
 class PHPoHeader extends PHPoBlock
 {
 	
@@ -75,8 +83,37 @@ class PHPoHeader extends PHPoBlock
 		return $this->attributes;
 	}
 	
+	/**
+	 * Export header to string
+	 */
+	public function __toString()
+	{
+		$result = '';
+		//First export header comments
+		foreach ($this->comments as $comment)
+			if ($comment)
+				$result .= "# " . $comment . PHP_EOL;
+			else 
+				$result .= '#' . PHP_EOL;
+		
+		//Then there is an empty msgid, msgstr block pair
+		$result .= 'msgid ""' . PHP_EOL;
+		$result .= 'msgstr ""' . PHP_EOL;
+		
+		//Now its time to export meta strings
+		foreach($this->attributes as $attr => $value)
+			$result .= '"' . $attr . ': ' . $value . '"' . PHP_EOL;
+		
+		return $result;
+	}
+	
 }
 
+/**
+ * po Statement
+ * @author f0rud
+ *
+ */
 class PHPoStatement extends PHPoBlock
 {
 	/**
@@ -173,68 +210,169 @@ class PHPoStatement extends PHPoBlock
 		return $this->flags;
 	}
 	
+	/**
+	 * Add a translator comment
+	 * @param string $commnet
+	 */
 	public function addTranslatorComment($commnet)
 	{
 		$this->translatorComments[] = $commnet;
 	}
 	
+	/**
+	 * get all translator comments
+	 * @return array
+	 */
 	public function getTranslatorComments()
 	{
 		return $this->translatorComments;
 	}
 	
+	/**
+	 * Add a extracted comment
+	 * @param string $comment
+	 */
 	public function addExtractedComment($comment)
 	{
 		$this->extractedComments[] = $comment;
 	}
 	
+	/**
+	 * get all extracted comments
+	 * @return array
+	 */
 	public function getExtractedComments()
 	{
 		return $this->extractedComments;
 	}
-	
+	/**
+	 * 
+	 * @param string $comment
+	 */
 	public function addPreviousUntranslatedString($comment)
 	{
 		$this->previousUntranslatedStrings[] = $comment;
 	}
 	
+	/**
+	 * @return array
+	 */
 	public function getPreviousUntranslatedStrings()
 	{
 		return $this->previousUntranslatedStrings;
 	}	
 	
-	
+	/**
+	 * Add a msg id line
+	 * @param string $msg
+	 */
 	public function addMsgId($msg)
 	{
 		$this->msgId[] = $msg;
 	}
+	
+	/**
+	 * Get all msh id as an array
+	 * @return array
+	 */
 	
 	public function getMsgId()
 	{
 		return $this->msgId;
 	}
 	
+	/**
+	 * Get msg id as a single string
+	 * @return string
+	 */
 	public function getMsgIdAsString()
 	{
 		return implode(' ', $this->msgId);
 	}
 	
+	/**
+	 * Add a msgstr
+	 * @param string $msg
+	 */
 	public function addMsgStr($msg)
 	{
 		$this->msgStr[] = $msg;
 	}
 	
+	/**
+	 * Get all message str as an array
+	 * @return array
+	 */
 	public function getMsgStr()
 	{
 		return $this->msgStr;
 	}
-	
+	/**
+	 * Get messages as a single string
+	 * @return string
+	 */
 	public function getMsgStrAsString()
 	{
 		return implode(' ', $this->msgStr);
 	}
+	
+	
+	public function __toString()
+	{
+		//First an empty line, means start of block
+		$result = PHP_EOL;
+		
+		//Translator comments
+		foreach ($this->translatorComments as $comment)
+			$result .= '# ' . $comment . PHP_EOL;
+		
+		//Extracted comments
+		foreach ($this->extractedComments as $comment)
+			$result .= '#.' . $comment . PHP_EOL;
+		
+		//Refrences
+		foreach ($this->placements as $comment)
+			$result .= '#:' . $comment . PHP_EOL;
+		
+		//Flags 
+		if (count($this->flags) > 0)
+			$result .= '#,' . implode(',', $this->flags) . PHP_EOL;
+		
+		//Previus untranslated strings
+		foreach ($this->previousUntranslatedStrings as $comment)
+			$result .= '#|' . $comment . PHP_EOL;
+		
+		//OK now its time for msgid's
+		$i = 0;
+		foreach ($this->msgId as $str)
+		{
+			if ($i == 0)
+				$result .= 'msgid "' . $str . '"' . PHP_EOL;
+			else
+				$result .= '"' . $str . '"' . PHP_EOL;
+			$i++;
+		}
+		
+		//OK now its time for msgstr's
+		$i = 0;
+		foreach ($this->msgStr as $str)
+		{
+			if ($i == 0)
+				$result .= 'msgstr "' . $str . '"' . PHP_EOL;
+			else
+				$result .= '"' . $str . '"' . PHP_EOL;
+			$i++;
+		}	
+
+		return $result;
+	}
 }
 
+/**
+ * PHPo class to parse and use po file
+ * @author f0rud
+ *
+ */
 class PHPo {
 
 
@@ -316,17 +454,17 @@ class PHPo {
 		$this->header = new PHPoHeader();
 		while ($line = $this->getNextLine())
 		{
-			if (substr($line, 0, 2) == '# ')
+			if ($line{0} == '#')
 			{
-				$line = substr($line, 2);
-				$this->header->addComment($line);
+				$line = substr($line, 1);
+				$this->header->addComment(trim ($line));
 			}
 			elseif ($line{0} == '"' )
 			{
 				$line = substr( $line, 1 , strlen($line) - 2);
 				//Its normal to have an \n in the end, remove that since not usefull here
-				$line = str_replace('\n', '', $line);
-				$attr = explode(':', $line);
+				//$line = str_replace('\n', '', $line);
+				$attr = explode(':', $line, 2);
 				if (count($attr) == 2)
 					$this->header->addAttribute($attr[0], $attr[1]);
 				//else just ignore it!
@@ -335,7 +473,9 @@ class PHPo {
 	}
 	
 	/**
-	 * Parse 
+	 * Parse a statment block
+	 * return false on last block
+	 * @return boolean 
 	 */
 	private function parseABlock()
 	{
@@ -385,6 +525,7 @@ class PHPo {
 							$line = preg_replace('/^[a-zA-Z]{6}\s?"(.*)"$/', '\\1', $line);
 						}
 						
+						$line = preg_replace('/^"(.*)"$/', '\\1', $line);
 						if ($msgStr)
 							$statement->addMsgStr($line);
 						else
@@ -401,8 +542,7 @@ class PHPo {
 	}
 	
 	/**
-	 * Parse po file into an array
-	 * 
+	 * Parse po file  
 	 */
 
 	public function parsePO()
@@ -413,15 +553,33 @@ class PHPo {
 		$this->parseHeder();
 		while ($this->parseABlock());
 	}
+	
+	/**
+	 * Get header 
+	 * @return PHPoHeader
+	 */
 
 	public function getHeader()
 	{
 		return $this->header;
 	}
 	
+	/**
+	 * Get statements
+	 * @return array of PHPoStatement
+	 */
 	public function getStatements()
 	{
 		return $this->statements;
+	}
+	
+	public function __toString()
+	{
+		$result = $this->header->__toString();
+		foreach ($this->statements as $statement)
+			$result .= $statement->__toString();
+		
+		return $result;
 	}
 
 }
