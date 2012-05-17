@@ -65,7 +65,6 @@ class PHPoHeader extends PHPoBlock
 	 * 
 	 * @return string
 	 */
-	
 	public function getAttribute($name, $default = null)
 	{
 		if (isset($this->attributes[$name]))
@@ -245,6 +244,7 @@ class PHPoStatement extends PHPoBlock
 	{
 		return $this->extractedComments;
 	}
+
 	/**
 	 * 
 	 * @param string $comment
@@ -307,6 +307,7 @@ class PHPoStatement extends PHPoBlock
 	{
 		return $this->msgStr;
 	}
+
 	/**
 	 * Get messages as a single string
 	 * @return string
@@ -315,7 +316,6 @@ class PHPoStatement extends PHPoBlock
 	{
 		return implode(' ', $this->msgStr);
 	}
-	
 	
 	public function __toString()
 	{
@@ -374,8 +374,6 @@ class PHPoStatement extends PHPoBlock
  *
  */
 class PHPo {
-
-
 	
 	/**
 	 * File address
@@ -389,7 +387,6 @@ class PHPo {
 	 */
 	private $poLines;
 	
-	
 	/**
 	 * Header of this po file
 	 * @var PHPoHeader
@@ -402,7 +399,6 @@ class PHPo {
 	private $statements = array();
 	private $flags = array();
 	private $strId = array();
-
 
 	/**
 	 * Constructor
@@ -436,7 +432,6 @@ class PHPo {
 	 * Get next line from queue
 	 * @return string
 	 */
-	
 	private function getNextLine()
 	{
 		if (count($this->poLines) == 0)
@@ -449,7 +444,7 @@ class PHPo {
 	/**
 	 * Parse header part
 	 */
-	private function parseHeder()
+	private function parseHeader()
 	{
 		$this->header = new PHPoHeader();
 		while ($line = $this->getNextLine())
@@ -544,13 +539,12 @@ class PHPo {
 	/**
 	 * Parse po file  
 	 */
-
 	public function parsePO()
 	{
 		// Reset current result
 		$this->statements = array();
 		//First of all, parse header 
-		$this->parseHeder();
+		$this->parseHeader();
 		while ($this->parseABlock());
 	}
 	
@@ -558,7 +552,6 @@ class PHPo {
 	 * Get header 
 	 * @return PHPoHeader
 	 */
-
 	public function getHeader()
 	{
 		return $this->header;
