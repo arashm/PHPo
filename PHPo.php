@@ -158,6 +158,18 @@ class PHPoStatement extends PHPoBlock
 	private $msgStr = array();
 	
 	/**
+	 * message context
+	 * @var string
+	 */
+	private $msgctxt;
+	
+	/**
+	 * plural message if any
+	 * @var string
+	 */
+	private $msgIdPlural ;
+	
+	/**
 	 * Add a placements
 	 * @param string $strPlace
 	 */
@@ -307,6 +319,43 @@ class PHPoStatement extends PHPoBlock
 	{
 		return $this->msgStr;
 	}
+	
+	/**
+	 * get message context 
+	 * @return string 
+	 */
+	public function getMsgctxt()
+	{
+		return $this->msgctxt;
+	}
+	
+	/**
+	 * Set message context 
+	 * @param string $ctxt
+	 */
+	public function setMsgctxt($ctxt)
+	{
+		$this->msgctxt = $ctxt;
+	}
+	
+	/**
+	 * Add plural message
+	 * @param string $msg
+	 */
+	public function setMsgPlural($msg)
+	{
+		$this->msgIdPlural= $msg;
+	}
+	
+	/**
+	 * Get all plural message 
+	 * @return string
+	 */
+	public function getMsgPlural()
+	{
+		return $this->msgIdPlural;
+	}
+	
 
 	/**
 	 * Get messages as a single string
@@ -317,6 +366,10 @@ class PHPoStatement extends PHPoBlock
 		return implode(' ', $this->msgStr);
 	}
 	
+	/**
+	 * Convert this object to string
+	 * @return string
+	 */
 	public function __toString()
 	{
 		//First an empty line, means start of block
@@ -342,6 +395,10 @@ class PHPoStatement extends PHPoBlock
 		foreach ($this->previousUntranslatedStrings as $comment)
 			$result .= '#|' . $comment . PHP_EOL;
 		
+		//Is there a ctxt?
+		if ($this->msgctxt)
+			$result .= 'msgctxt "' . $this->msgctxt . '"' . PHP_EOL;
+		
 		//OK now its time for msgid's
 		$i = 0;
 		foreach ($this->msgId as $str)
@@ -353,11 +410,21 @@ class PHPoStatement extends PHPoBlock
 			$i++;
 		}
 		
+		//Is there any plural form?
+		$hasPlural = false;
+		if ($this->msgIdPlural)
+		{
+			$hasPlural = true;
+			$result .= 'msgid_plural "' . $this->msgIdPlural . '"' . PHP_EOL;
+		}
+		
 		//OK now its time for msgstr's
 		$i = 0;
 		foreach ($this->msgStr as $str)
 		{
-			if ($i == 0)
+			if ($hasPlural)
+				$result .= 'msgstr[' . $i . '] "' . $str . '"' . PHP_EOL;
+			elseif ($i == 0)
 				$result .= 'msgstr "' . $str . '"' . PHP_EOL;
 			else
 				$result .= '"' . $str . '"' . PHP_EOL;
@@ -505,26 +572,48 @@ class PHPo {
 				$statement->addTranslatorComment(trim($line));
 			}
 			else {
+				//First check for msgctxt 
+				if (substr($line, 0, 7) == 'msgctxt')
+				{
+					$line = preg_replace('/^[a-zA-Z]{7}\s?"(.*)"$/', '\\1', $line);
+					$statement->setMsgctxt($line);
+					//Ok just fetch next line.
+					$line = $this->getNextLine();
+				}
 				//Its time to check for translated strings
-				if (substr($line, 0, 5) == "msgid")
+				if (substr($line, 0, 5) == 'msgid')
 				{
 					//It must follow with a msgstr
 					$line = preg_replace('/^[a-zA-Z]{5}\s?"(.*)"$/', '\\1', $line);
 					$statement->addMsgId($line);
-					$msgStr = false;
+					$msgMode = 0 ; //Msg id mode
+					$hasPlural = false;
 					while ($line = $this->getNextLine())
 					{
+						//check for msgid_plural
+						if (substr($line, 0, 12) == 'msgid_plural')
+						{
+							//TODO: There is a question. is there a msgid_plural with multiple line? 
+							$hasPlural = true;
+							$msgMode = 1;//Plural mode
+							$line = preg_replace('/^[a-zA-Z_]{12}\s?(.*)/', '\\1', $line);
+						}
 						if (substr($line, 0, 6) == "msgstr")
 						{
-							$msgStr = true;
-							$line = preg_replace('/^[a-zA-Z]{6}\s?"(.*)"$/', '\\1', $line);
+							$msgMode = 2;
+							if ($hasPlural)
+								$line = preg_replace('/^[a-zA-Z]{6}\[[0-9]+\]\s?(.*)/', '\\1', $line);
+							else
+								$line = preg_replace('/^[a-zA-Z]{6}\s?(.*)/', '\\1', $line);
 						}
 						
 						$line = preg_replace('/^"(.*)"$/', '\\1', $line);
-						if ($msgStr)
-							$statement->addMsgStr($line);
-						else
+						if ($msgMode == 0)
 							$statement->addMsgId($line);
+						elseif ($msgMode == 1)
+							$statement->setMsgPlural($line);
+						elseif ($msgMode == 2)
+							$statement->addMsgStr($line);
 					}
 					//Exit this while means the block is ended, so exit the block
 					break;
