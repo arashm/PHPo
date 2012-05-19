@@ -457,6 +457,11 @@ class PHPoStatement extends PHPoBlock
  */
 class PHPo {
 	
+	
+	const UNTRANSLATED = 'untranslated';
+	const TRANSLATED   = 'translated';
+	const FUZZY        = 'fuzzy';
+	const ALL          = 'all';
 	/**
 	 * File address
 	 * @var string
@@ -679,11 +684,11 @@ class PHPo {
 	 * get statements by flag
 	 * @return array of PHPoStatement
 	 **/
-	public function getStatementBy($flag = "untranslated")
+	public function getStatementBy($flag = PHPo::ALL)
 	{
 		$str = array();
 		switch ($flag) {
-			case 'fuzzy':
+			case PHPo::FUZZY:
 				foreach ($this->statements as $statement => $value) 
 				{
 					if ($value->hasFlag('fuzzy'))
@@ -692,7 +697,7 @@ class PHPo {
 					}
 				}
 				break;
-			case 'untranslated':
+			case PHPo::UNTRANSLATED:
 				foreach ($this->statements as $statement => $value) 
 				{
 					if (!$value->getIsTranslated()) 
@@ -701,7 +706,7 @@ class PHPo {
 					}
 				}
 				break;
-			case 'translated':
+			case PHPo::TRANSLATED:
 				foreach ($this->statements as $statement => $value) 
 				{
 					if ($value->getIsTranslated()) 
@@ -711,7 +716,8 @@ class PHPo {
 				}
 				break;
 			default:
-				throw new Exception("getStatementBy: Unknown parameter passed");
+				//throw new Exception("getStatementBy: Unknown parameter passed");
+				return $this->statements;
 				break;
 		}
 		return $str;
