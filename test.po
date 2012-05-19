@@ -69,5 +69,6 @@ msgid ""
 msgstr ""
 
 #: ../policy/org.gnome.color.policy.in.h:1
+#, fuzzy
 msgid "Authentication is required to install the color profile for all users"
-msgstr ""
+msgstr "ترجمه الکی"

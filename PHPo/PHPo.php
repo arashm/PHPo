@@ -158,12 +158,6 @@ class PHPoStatement extends PHPoBlock
 	private $msgStr = array();
 
 	/**
-	 * Block translation status
-	 * @var boolean
-	 **/
-	private $isTranslated = False;
-	
-	/**
 	 * message context
 	 * @var string
 	 */
@@ -203,7 +197,7 @@ class PHPoStatement extends PHPoBlock
 			$flags = array ($flags);
 		//TODO: validate flag type
 		foreach ($flags as $flag)
-			$this->flags[] = $flag;
+			$this->flags[] = trim($flag);
 		$this->flags = array_unique($this->flags);
 	}
 	
@@ -373,21 +367,18 @@ class PHPoStatement extends PHPoBlock
 	}
 
 	/**
-	 * undocumented function
-	 * @return boolean
-	 **/
-	public function setIsTranslated()
-	{
-		$this->isTranslated = True;
-	}
-
-	/**
-	 * undocumented function
+	 * Return true if there is a translation and false if not. fuzzy set as not
 	 * @return boolean
 	 **/
 	function getIsTranslated()
 	{
-		return $this->isTranslated;
+		if ($this->hasFlasg('fuzzy'))
+			return false;
+		elseif (count($this->msgStr) == 1 && $this->msgStr[0])
+			return true;
+		elseif (count($this->msgStr) > 1 && $this->msgStr[1])
+			return true; 
+		return false;
 	}
 	
 	/**
@@ -609,7 +600,6 @@ class PHPo {
 				{
 					//It must follow with a msgstr
 					$line = preg_replace('/^[a-zA-Z]{5}\s?"(.*)"$/', '\\1', $line);
-					// if (strlen($line) > 0) { $statement->setIsTranslated(); }
 					$statement->addMsgId($line);
 					$msgMode = 0 ; //Msg id mode
 					$hasPlural = false;
@@ -634,14 +624,9 @@ class PHPo {
 							{
 								$line = preg_replace('/^[a-zA-Z]{6}\s?(.*)/', '\\1', $line);
 							}
-							if (strlen($line) > 2) { $statement->setIsTranslated(); }
 						}
 						
 						$line = preg_replace('/^"(.*)"$/', '\\1', $line);
-						// Set if the string is translated or not
-						// if (strlen($line) > 0) { $statement->setIsTranslated(); }
-						// echo $line . "<br>";
-
 
 						if ($msgMode == 0)
 							$statement->addMsgId($line);
