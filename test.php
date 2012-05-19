@@ -7,7 +7,7 @@ $po = new PHPo('test.po');
 
 // print_r($po->getStatements());
 
-print_r($po->getStatementBy("fuzzy"));
+print_r($po->getStatements("fuzzy"));
 
 // print_r($po->getTranslationPercentage());
 
