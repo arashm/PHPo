@@ -9,6 +9,8 @@ $po = new PHPo('test.po');
 
 print_r($po->getStatementBy("fuzzy"));
 
+// print_r($po->getTranslationPercentage());
+
 // $po->getTranslatedStr();
 
 // echo $po;

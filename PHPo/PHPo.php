@@ -462,6 +462,7 @@ class PHPo {
 	const TRANSLATED   = 'translated';
 	const FUZZY        = 'fuzzy';
 	const ALL          = 'all';
+	
 	/**
 	 * File address
 	 * @var string
@@ -729,7 +730,7 @@ class PHPo {
 	 **/
 	function getTranslationPercentage()
 	{
-		return round(count($this->getStatementBy()) / count($this->statements) * 100);
+		return round(count($this->getStatementBy(PHPo::UNTRANSLATED)) / count($this->statements) * 100);
 	}
 	
 	public function __toString()
