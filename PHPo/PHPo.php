@@ -676,37 +676,45 @@ class PHPo {
 	}
 
 	/**
-	 * get translated strings
+	 * get statements by flag
 	 * @return array of PHPoStatement
 	 **/
-	public function getTranslatedStr()
+	public function getStatementBy($flag = "untranslated")
 	{
-		$translatedStr = array();
-		foreach ($this->statements as $statement => $value) 
-		{
-			if ($value->getIsTranslated()) 
-			{
-				$translatedStr[] = $value;
-			}
+		$str = array();
+		switch ($flag) {
+			case 'fuzzy':
+				foreach ($this->statements as $statement => $value) 
+				{
+					if ($value->hasFlag('fuzzy'))
+					{
+						$str[] = $value;
+					}
+				}
+				break;
+			case 'untranslated':
+				foreach ($this->statements as $statement => $value) 
+				{
+					if (!$value->getIsTranslated()) 
+					{
+						$str[] = $value;
+					}
+				}
+				break;
+			case 'translated':
+				foreach ($this->statements as $statement => $value) 
+				{
+					if ($value->getIsTranslated()) 
+					{
+						$str[] = $value;
+					}
+				}
+				break;
+			default:
+				throw new Exception("getStatementBy: Unknown parameter passed");
+				break;
 		}
-		return $translatedStr;
-	}
-
-	/**
-	 * get untranslated strings
-	 * @return array of PHPoStatement
-	 **/
-	function getUntranslatedStr()
-	{
-		$unTranslatedStr = array();
-		foreach ($this->statements as $statement => $value) 
-		{
-			if (!$value->getIsTranslated()) 
-			{
-				$unTranslatedStr[] = $value;
-			}
-		}
-		return $unTranslatedStr;
+		return $str;
 	}
 
 	/**
@@ -715,7 +723,7 @@ class PHPo {
 	 **/
 	function getTranslationPercentage()
 	{
-		return round(count($this->getTranslatedStr()) / count($this->statements) * 100);
+		return round(count($this->getStatementBy()) / count($this->statements) * 100);
 	}
 	
 	public function __toString()
