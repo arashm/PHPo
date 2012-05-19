@@ -61,3 +61,13 @@ msgid "singular"
 msgid_plural "plural"
 msgstr[0] "singulier"
 msgstr[1] "pluriel"
+
+#: ../data/gnome-color-manager.schemas.in.h:19
+msgid ""
+"This is the number of seconds in between notifying the user to recalibrate "
+"each display device. Set to 0 to disable the notification."
+msgstr ""
+
+#: ../policy/org.gnome.color.policy.in.h:1
+msgid "Authentication is required to install the color profile for all users"
+msgstr ""

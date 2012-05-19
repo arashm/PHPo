@@ -156,6 +156,12 @@ class PHPoStatement extends PHPoBlock
 	 * @var unknown_type
 	 */
 	private $msgStr = array();
+
+	/**
+	 * Block translation status
+	 * @var boolean
+	 **/
+	private $isTranslated = False;
 	
 	/**
 	 * message context
@@ -364,6 +370,24 @@ class PHPoStatement extends PHPoBlock
 	public function getMsgStrAsString()
 	{
 		return implode(' ', $this->msgStr);
+	}
+
+	/**
+	 * undocumented function
+	 * @return boolean
+	 **/
+	public function setIsTranslated()
+	{
+		$this->isTranslated = True;
+	}
+
+	/**
+	 * undocumented function
+	 * @return boolean
+	 **/
+	function getIsTranslated()
+	{
+		return $this->isTranslated;
 	}
 	
 	/**
@@ -585,6 +609,7 @@ class PHPo {
 				{
 					//It must follow with a msgstr
 					$line = preg_replace('/^[a-zA-Z]{5}\s?"(.*)"$/', '\\1', $line);
+					// if (strlen($line) > 0) { $statement->setIsTranslated(); }
 					$statement->addMsgId($line);
 					$msgMode = 0 ; //Msg id mode
 					$hasPlural = false;
@@ -602,12 +627,22 @@ class PHPo {
 						{
 							$msgMode = 2;
 							if ($hasPlural)
+							{
 								$line = preg_replace('/^[a-zA-Z]{6}\[[0-9]+\]\s?(.*)/', '\\1', $line);
-							else
+							}
+							else 
+							{
 								$line = preg_replace('/^[a-zA-Z]{6}\s?(.*)/', '\\1', $line);
+							}
+							if (strlen($line) > 2) { $statement->setIsTranslated(); }
 						}
 						
 						$line = preg_replace('/^"(.*)"$/', '\\1', $line);
+						// Set if the string is translated or not
+						// if (strlen($line) > 0) { $statement->setIsTranslated(); }
+						// echo $line . "<br>";
+
+
 						if ($msgMode == 0)
 							$statement->addMsgId($line);
 						elseif ($msgMode == 1)
@@ -653,6 +688,49 @@ class PHPo {
 	public function getStatements()
 	{
 		return $this->statements;
+	}
+
+	/**
+	 * get translated strings
+	 * @return array of PHPoStatement
+	 **/
+	public function getTranslatedStr()
+	{
+		$translatedStr = array();
+		foreach ($this->statements as $statement => $value) 
+		{
+			if ($value->getIsTranslated()) 
+			{
+				$translatedStr[] = $value;
+			}
+		}
+		return $translatedStr;
+	}
+
+	/**
+	 * get untranslated strings
+	 * @return array of PHPoStatement
+	 **/
+	function getUntranslatedStr()
+	{
+		$unTranslatedStr = array();
+		foreach ($this->statements as $statement => $value) 
+		{
+			if (!$value->getIsTranslated()) 
+			{
+				$unTranslatedStr[] = $value;
+			}
+		}
+		return $unTranslatedStr;
+	}
+
+	/**
+	 * Get translation percentage
+	 * @return int
+	 **/
+	function getTranslationPercentage()
+	{
+		return round(count($this->getTranslatedStr()) / count($this->statements) * 100);
 	}
 	
 	public function __toString()
