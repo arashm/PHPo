@@ -462,7 +462,7 @@ class PHPo {
 	const TRANSLATED   = 'translated';
 	const FUZZY        = 'fuzzy';
 	const ALL          = 'all';
-	
+
 	/**
 	 * File address
 	 * @var string
@@ -671,21 +671,12 @@ class PHPo {
 	{
 		return $this->header;
 	}
-	
-	/**
-	 * Get statements
-	 * @return array of PHPoStatement
-	 */
-	public function getStatements()
-	{
-		return $this->statements;
-	}
 
 	/**
 	 * get statements by flag
 	 * @return array of PHPoStatement
 	 **/
-	public function getStatementBy($flag = PHPo::ALL)
+	public function getStatements($flag = PHPo::ALL)
 	{
 		$str = array();
 		switch ($flag) {
