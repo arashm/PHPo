@@ -206,7 +206,7 @@ class PHPoStatement extends PHPoBlock
 	 * @param string $flag
 	 * @return boolean
 	 */
-	public function hasFlasg($flag)
+	public function hasFlag($flag)
 	{
 		return in_array($flag, $this->flags);
 	}
@@ -372,7 +372,7 @@ class PHPoStatement extends PHPoBlock
 	 **/
 	function getIsTranslated()
 	{
-		if ($this->hasFlasg('fuzzy'))
+		if ($this->hasFlag('fuzzy'))
 			return false;
 		elseif (count($this->msgStr) == 1 && $this->msgStr[0])
 			return true;
