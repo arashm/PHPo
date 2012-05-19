@@ -1,7 +1,7 @@
 <?php
-require_once 'PHPo.php';
+require_once 'PHPo/PHPo.php';
 
-$po = new PHPo('gnome-color-manager.po');
+$po = new PHPo('test.po');
 
 //print_r($po->getHeader());
 
