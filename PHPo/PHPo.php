@@ -60,9 +60,10 @@ class PHPoHeader extends PHPoBlock
 	 * Edit a comment
 	 * @return void
 	 **/
-	private function editComment($id, $comment)
+	public function editComment($id, $comment)
 	{
-		$this->comments[$id] = $comment;
+		if (isset($this->comments[$id]))
+			$this->comments[$id] = $comment;
 	}
 	
 	/**
@@ -101,14 +102,13 @@ class PHPoHeader extends PHPoBlock
 	}
 
 	/**
-	 * undocumented function
+	 * Changes the value of the passed Attribute
 	 * @return void
 	 **/
-	private function editAttribute($name, $value)
+	public function editAttribute($name, $value)
 	{
-		if (isset($this->attributes[$name])) {
-			$this->attribute[$name] = $value;
-		}
+		if (isset($this->attributes[$name]))
+			$this->attributes[$name] = $value;
 	}
 	
 	/**
@@ -325,7 +325,6 @@ class PHPoStatement extends PHPoBlock
 	 * Get all msh id as an array
 	 * @return array
 	 */
-	
 	public function getMsgId()
 	{
 		return $this->msgId;
@@ -785,6 +784,24 @@ class PHPo {
 		{
 			return $this->statements[$id];
 		}
+	}
+
+	/**
+	 * Edits headers comments by id
+	 * @return void
+	 **/
+	public function editHeaderComment(PHPoHeader $header, $id, $value)
+	{
+		$header->editComment($id, $value);
+	}
+
+	/**
+	 * Edits headers attributes by it's key
+	 * @return void
+	 **/
+	public function editHeaderAttribute(PHPoHeader $header, $key, $value)
+	{
+		$header->editAttribute($key, $value);
 	}
 
 	/**
