@@ -790,18 +790,18 @@ class PHPo {
 	 * Edits headers comments by id
 	 * @return void
 	 **/
-	public function editHeaderComment(PHPoHeader $header, $id, $value)
+	public function editHeaderComment($id, $value)
 	{
-		$header->editComment($id, $value);
+		$this->header->editComment($id, $value);
 	}
 
 	/**
 	 * Edits headers attributes by it's key
 	 * @return void
 	 **/
-	public function editHeaderAttribute(PHPoHeader $header, $key, $value)
+	public function editHeaderAttribute($key, $value)
 	{
-		$header->editAttribute($key, $value);
+		$this->header->addAttribute($key, $value);
 	}
 
 	/**

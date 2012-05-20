@@ -11,16 +11,14 @@ $po = new PHPo('test.po');
 /** 
  * Edit Header comments
  */
-$header = $po->getHeader();
-$po->editHeaderComment($header, "3", "ArashM");
-print_r($po->getHeader());
+// $po->editHeaderComment("3", "ArashM");
+// print_r($po->getHeader());
 
 /** 
  * Edit Header Attributes
  */
-// $header = $po->getHeader();
-// $po->editHeaderAttribute($header, "Project-Id-Version", "123");
-// print_r($po->getHeader());
+$po->editHeaderAttribute("Project-Id-Version", "1.2.3");
+print_r($po->getHeader());
 
 
 // print_r($po->getStatements());
