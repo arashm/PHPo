@@ -716,7 +716,7 @@ class PHPo {
 	}
 
 	/**
-	 * undocumented function
+	 * get translation count
 	 * @return int
 	 **/
 	function getStatementsByCount($flag = PHPo::All)
