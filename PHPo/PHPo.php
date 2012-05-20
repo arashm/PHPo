@@ -100,16 +100,6 @@ class PHPoHeader extends PHPoBlock
 		else
 			return $default;
 	}
-
-	/**
-	 * Changes the value of the passed Attribute
-	 * @return void
-	 **/
-	public function editAttribute($name, $value)
-	{
-		if (isset($this->attributes[$name]))
-			$this->attributes[$name] = $value;
-	}
 	
 	/**
 	 * Get all attributes
@@ -756,7 +746,7 @@ class PHPo {
 	 * get translation count
 	 * @return int
 	 **/
-	function getStatementsByCount($flag = PHPo::All)
+	public function getStatementsByCount($flag = PHPo::All)
 	{
 		switch ($flag) {
 			case PHPo::ALL:
@@ -808,7 +798,7 @@ class PHPo {
 	 * Get translation percentage
 	 * @return int
 	 **/
-	function getTranslationPercentage()
+	public function getTranslationPercentage()
 	{
 		return round(count($this->getStatementBy(PHPo::UNTRANSLATED)) / count($this->statements) * 100);
 	}
