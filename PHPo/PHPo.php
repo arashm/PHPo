@@ -496,10 +496,10 @@ class PHPoStatement extends PHPoBlock
 class PHPo {
 	
 	
-	const UNTRANSLATED = 'untranslated';
-	const TRANSLATED   = 'translated';
-	const FUZZY        = 'fuzzy';
-	const ALL          = 'all';
+	const UNTRANSLATED 	= 'untranslated';
+	const TRANSLATED 	= 'translated';
+	const FUZZY        	= 'fuzzy';
+	const ALL 			= 'all';
 
 	/**
 	 * File address
@@ -773,6 +773,18 @@ class PHPo {
 				return count($this->getStatements("untranslated"));
 				break;
 			}
+	}
+
+	/**
+	 * get statements by id
+	 * @return array of PHPoStatement
+	 **/
+	public function getStatementsById($id)
+	{
+		if (array_key_exists($id, $this->statements))
+		{
+			return $this->statements[$id];
+		}
 	}
 
 	/**
