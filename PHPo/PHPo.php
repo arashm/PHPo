@@ -781,7 +781,7 @@ class PHPo {
 	 **/
 	public function getStatementsById($id)
 	{
-		if (array_key_exists($id, $this->statements))
+		if (is_int($id) && array_key_exists($id, $this->statements))
 		{
 			return $this->statements[$id];
 		}
