@@ -60,7 +60,7 @@ class PHPoHeader extends PHPoBlock
 	 * Edit a comment
 	 * @return void
 	 **/
-	private function editComment(int $id, $comment)
+	private function editComment($id, $comment)
 	{
 		$this->comments[$id] = $comment;
 	}
