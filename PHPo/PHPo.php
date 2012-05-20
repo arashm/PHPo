@@ -716,6 +716,28 @@ class PHPo {
 	}
 
 	/**
+	 * undocumented function
+	 * @return int
+	 **/
+	function getStatementsByCount($flag = PHPo::All)
+	{
+		switch ($flag) {
+			case PHPo::ALL:
+				return count($this->getStatements());
+				break;
+			case PHPo::FUZZY:
+				return count($this->getStatements("fuzzy"));
+				break;
+			case PHPo::TRANSLATED:
+				return count($this->getStatements("Translated"));
+				break;
+			case PHPo::UNTRANSLATED:
+				return count($this->getStatements("untranslated"));
+				break;
+			}
+	}
+
+	/**
 	 * Get translation percentage
 	 * @return int
 	 **/
