@@ -746,7 +746,7 @@ class PHPo {
 	 * get translation count
 	 * @return int
 	 **/
-	public function getStatementsByCount($flag = PHPo::All)
+	public function getStatementsCount($flag = PHPo::All)
 	{
 		switch ($flag) {
 			case PHPo::ALL:
@@ -768,7 +768,7 @@ class PHPo {
 	 * get statements by id
 	 * @return array of PHPoStatement
 	 **/
-	public function getStatementsById($id)
+	public function getStatementById($id)
 	{
 		if (is_int($id) && array_key_exists($id, $this->statements))
 		{
@@ -777,10 +777,29 @@ class PHPo {
 	}
 
 	/**
+	 * Get translation percentage
+	 * @return int
+	 **/
+	public function getTranslationPercentage()
+	{
+		return round(count($this->getStatementBy(PHPo::UNTRANSLATED)) / count($this->statements) * 100);
+	}
+
+	/**
 	 * Edits headers comments by id
 	 * @return void
 	 **/
-	public function editHeaderComment($id, $value)
+	public function editHeaderComment($value)
+	{
+		//TODO
+	}
+	
+
+	/**
+	 * Edits headers comments by id
+	 * @return void
+	 **/
+	public function editHeaderCommentById($id, $value)
 	{
 		$this->header->editComment($id, $value);
 	}
@@ -794,15 +813,6 @@ class PHPo {
 		$this->header->addAttribute($key, $value);
 	}
 
-	/**
-	 * Get translation percentage
-	 * @return int
-	 **/
-	public function getTranslationPercentage()
-	{
-		return round(count($this->getStatementBy(PHPo::UNTRANSLATED)) / count($this->statements) * 100);
-	}
-	
 	public function __toString()
 	{
 		$result = $this->header->__toString();

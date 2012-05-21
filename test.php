@@ -27,8 +27,8 @@ print_r($po->getHeader());
 
 // print_r($po->getTranslationPercentage());
 
-// echo ($po->getStatementsByCount("untranslated"));
+// echo ($po->getStatementsCount("untranslated"));
 
-// print_r($po->getStatementsById(2));
+// print_r($po->getStatementById(2));
 
 // echo $po;
