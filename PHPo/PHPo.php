@@ -238,6 +238,17 @@ class PHPoStatement extends PHPoBlock
 	{
 		return in_array($flag, $this->flags);
 	}
+
+	/**
+	 * Remove a flag from statement
+	 * @param string $flag
+	 * @return void
+	 **/
+	public function removeFlag($flag)
+	{
+		$key = array_search($flag, $this->flags);
+		unset($this->flags[$key]);
+	}
 	
 	/**
 	 * Get all flags
@@ -811,6 +822,19 @@ class PHPo {
 	public function editHeaderAttribute($key, $value)
 	{
 		$this->header->addAttribute($key, $value);
+	}
+
+	/**
+	 * Toggle fuzzy state of a statement
+	 * @return void
+	 **/
+	public function toggleFuzzy(PHPoStatement $statement)
+	{
+		if ($statement->hasFlag("fuzzy")) {
+			$statement->removeFlag("fuzzy");
+		} else {
+			$statement->addFlag("fuzzy");
+		}
 	}
 
 	public function __toString()

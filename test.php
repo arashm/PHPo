@@ -29,6 +29,11 @@ $po = new PHPo('test.po');
 
 // echo ($po->getStatementsCount("untranslated"));
 
-print_r($po->getStatementById(2));
+// print_r($po->getStatementById(2));
+
+// Toggle a fuzzy statement
+$statement = $po->getStatementById(1);
+$po->toggleFuzzy($statement);
+print_r($po->getStatementById(1));
 
 // echo $po;
