@@ -511,7 +511,7 @@ class PHPo {
 	 * Array contain file lines
 	 * @var array
 	 */
-	private $poLines;
+	private $poLines = array();
 	
 	/**
 	 * Header of this po file
@@ -708,6 +708,16 @@ class PHPo {
 	public function getHeader()
 	{
 		return $this->header;
+	}
+	
+	public function setHeader(PHPoHeader $header)
+	{
+		$this->header = $header;
+	}
+	
+	public function addStatement(PHPoStatement $statement)
+	{
+		$this->statements[] = $statement;
 	}
 
 	/**

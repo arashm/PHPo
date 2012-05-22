@@ -1,0 +1,99 @@
+# Persian translation for gnome-color-manager.
+# Copyright (C) 2010 gnome-color-manager's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-color-manager package.
+# narcissus <3006nol@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-color-manager gnome-2-32\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"POT-Creation-Date: 2011-06-12 17:20+0000\n"
+"PO-Revision-Date: 2011-04-24 23:15+0330\n"
+"Last-Translator: narcissus <3006nol<@>gmail<DOT>com>\n"
+"Language-Team: Persian <fa@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# 
+#.
+#: ../data/gcm-apply.desktop.in.h:1
+#,
+#|
+msgid "Applies device profile settings at session startup"
+msgstr "ابزا تنظیم مشخصات دستگاه  در  نشست شروع کار  "
+
+# 
+#.
+#: ../data/gcm-import.desktop.in.h:1
+#,fuzzy
+#|
+msgid "ICC Profile Installer"
+msgstr "ICC نصب مشخصات&&"
+
+# 
+#.
+#: ../data/gnome-color-manager.schemas.in.h:1
+#,
+#|
+msgid ""
+"Gamma is adjusted to affect the color of the attached monitor. Traditionally "
+"Linux has used a gamma value of 1.0, but this makes monitors look washed out "
+"compared Windows XP or OS X. Apple traditionally used a value of 1.8 for a "
+"long time, but now use the same value as Microsoft. Microsoft has always "
+"used a value of 2.2."
+msgstr ""
+"گاما تاثیر رنگ ضمیمه ی مانیتور است . لینوکس به صورت قراردادی از مقدار ۱.۰ "
+"برای گاما استفاده می کند ، اما با این مقدار مانیتور در مقایسه با  Windows XP "
+"یا OS X رنگ پریده به نظر می رسد . اپل به صورت قراردادی برای مدت زیادی از "
+"مقدار ۱.۸ استفاده میکرد ولی اکنون مقداری مانند Microsoft استفاده می کند . "
+"Microsoft همیشه از مقدار ۲.۲ استفاده کرده . "
+
+# 
+#. SECURITY:
+#. - Normal users require admin authentication to install files system
+#. wide to apply color profiles for sessions that have not explicitly
+#. chosen profiles to apply.
+#. - This should not be set to 'yes' as unprivileged users could then
+#. set a profile set to all-white or all-black and thus make the
+#. other sessions unusable.
+#.
+#: ../policy/org.gnome.color.policy.in.h:10
+#,
+#|
+msgid "Install system color profiles"
+msgstr "نصب مشخصات رنگ سیستم"
+
+# 
+#. Test message context
+#:
+#,
+#|
+msgid "some string"
+msgstr "une chaîne"
+
+# 
+#. Test message context and plural form
+#:
+#,
+#|
+msgid "singular"
+msgstr "singulierpluriel"
+
+# 
+#.
+#: ../data/gnome-color-manager.schemas.in.h:19
+#,
+#|
+msgid ""
+"This is the number of seconds in between notifying the user to recalibrate "
+"each display device. Set to 0 to disable the notification."
+msgstr ""
+
+# 
+#.
+#: ../policy/org.gnome.color.policy.in.h:1
+#,fuzzy
+#|
+msgid "Authentication is required to install the color profile for all users"
+msgstr "ترجمه الکی"
