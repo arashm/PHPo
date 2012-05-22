@@ -11,14 +11,14 @@ $po = new PHPo('test.po');
 /** 
  * Edit Header comments
  */
-// $po->editHeaderComment("3", "ArashM");
+// $po->editHeaderCommentById("3", "ArashM");
 // print_r($po->getHeader());
 
 /** 
  * Edit Header Attributes
  */
-$po->editHeaderAttribute("Project-Id-Version", "1.2.3");
-print_r($po->getHeader());
+// $po->editHeaderAttribute("Project-Id-Version", "1.2.3");
+// print_r($po->getHeader());
 
 
 // print_r($po->getStatements());
@@ -29,6 +29,6 @@ print_r($po->getHeader());
 
 // echo ($po->getStatementsCount("untranslated"));
 
-// print_r($po->getStatementById(2));
+print_r($po->getStatementById(2));
 
 // echo $po;
