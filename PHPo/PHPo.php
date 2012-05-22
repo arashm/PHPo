@@ -63,8 +63,22 @@ class PHPoHeader extends PHPoBlock
 	public function editComment($id, $comment)
 	{
 		if (isset($this->comments[$id]))
-			$this->comments[$id] = $comment;
+			{
+				$this->comments[$id] = $comment;
+				return True;
+			}
+		else
+			return False;
 	}
+
+	/**
+	 * undocumented function
+	 * @return void
+	 **/
+	// public function removeComment()
+	// {
+	// 	unset($this->comments);
+	// }
 	
 	/**
 	 * Get all comments
@@ -566,7 +580,7 @@ class PHPo {
 		//Trim do the trick :D
 		return trim($next);
 	}
-	
+
 	/**
 	 * Parse header part
 	 */
@@ -802,7 +816,24 @@ class PHPo {
 	 **/
 	public function editHeaderComment($value)
 	{
-		//TODO
+		$line = explode(PHP_EOL, $value);
+		foreach ($line as $key => $value) {
+			if ($this->header->editComment($key, trim($value)))
+			{
+				if ($value{0} == '#')
+				{
+					$value = substr($value, 1);
+					$this->header->editComment($key, trim($value));
+				}
+			} else {
+				if ($value{0} == '#')
+				{
+					$value = substr($value, 1);
+					$this->header->addComment(trim($value));
+				}
+			}
+		}
+		$this->header->addComment("");
 	}
 	
 

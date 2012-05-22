@@ -32,8 +32,18 @@ $po = new PHPo('test.po');
 // print_r($po->getStatementById(2));
 
 // Toggle a fuzzy statement
-$statement = $po->getStatementById(1);
-$po->toggleFuzzy($statement);
-print_r($po->getStatementById(1));
+// $statement = $po->getStatementById(1);
+// $po->toggleFuzzy($statement);
+// print_r($po->getStatementById(1));
+
+$comment = "# gnome-color-manager.
+			# Copyright (C) 2010 gnome-color-manager's COPYRIGHT HOLDER
+			# distributed under the same license as the gnome-color-manager package.
+			# narcissus <3006nol@gmail.com>, 2010.
+			# Arash <3006nol@gmail.com>, 2010.";
+
+$po->editHeaderComment($comment);
+
+print_r($po->getHeader());
 
 // echo $po;
